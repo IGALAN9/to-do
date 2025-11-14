@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "scripts": {
+"scripts": {
     "dev": "cross-env NODE_ENV=development node src/backend/server.js",
     "build": "next build",
     "start": "cross-env NODE_ENV=production node src/backend/server.js",
-    "seed": "cross-env NODE_ENV=development node src/backend/seed.js",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node src/backend/seed.js"
   },
+  
   "dependencies": {
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
@@ -28,6 +29,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
+    "sequelize-cli": "^6.6.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

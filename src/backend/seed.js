@@ -1,42 +1,67 @@
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process'; 
+import { fileURLToPath } from 'url';
 import { sequelize } from './config/database.js';
 import { Todo } from './models/Todo.js';
 
-const seedDatabase = async () => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbFilePath = path.join(__dirname, '../../../database.sqlite');
+
+const run = async () => {
   try {
-    await sequelize.authenticate();
-    console.log('🔌 Terhubung ke database...');
+    console.log('🚀 Memulai Setup Database...');
 
-    await sequelize.sync({ force: true });
-    console.log('🧹 Database lama dibersihkan.');
+    // 1. Cek File Database
+    if (!fs.existsSync(dbFilePath)) {
+      console.log('File database belum ada. Membuat baru...');
+      fs.writeFileSync(dbFilePath, ''); 
+    } else {
+      console.log('File database ditemukan. Mereset isinya...');
+    }
 
-    const createdTodos = await Todo.bulkCreate([
+    // 2. Jalankan Migrasi via CLI (Ini akan membuat tabel)
+    console.log('Menjalankan Migrasi (Membuat Tabel)...');
+    try {
+      execSync('npx sequelize-cli db:migrate:undo:all', { stdio: 'inherit' });
+      execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+    } catch (err) {
+      console.error('Gagal saat migrasi CLI. Pastikan .sequelizerc benar.');
+      process.exit(1);
+    }
+
+    console.log('Mengisi Data Dummy...');
+    await Todo.bulkCreate([
       {
-        title: "Belajar Struktur Backend",
-        description: "Memahami pemisahan routes, controller, dan model",
+        title: "Test 1",
+        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
         completed: true
       },
       {
-        title: "Setup Database SQLite",
-        description: "Konfigurasi Sequelize dan koneksi database",
+        title: "Test 2",
+        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
         completed: true
       },
       {
-        title: "Testing API dengan Postman",
-        description: "Coba endpoint GET, POST, PUT, DELETE",
+        title: "Test 3",
+        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
+        completed: true
+      },
+      {
+        title: "Test 4",
+        description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
         completed: false
       }
     ]);
 
-    console.log("✅ Data dummy berhasil ditambahkan!");
-    console.log("📊 Berikut data yang masuk ke database:");
-    
-    // console.log(JSON.stringify(createdTodos, null, 2));
+    console.log('Database siap digunakan.');
+    process.exit(0);
 
-    process.exit(0); 
   } catch (error) {
-    console.error("❌ Gagal seeding database:", error);
-    process.exit(1); 
+    console.error('Terjadi Error:', error);
+    process.exit(1);
   }
 };
 
-seedDatabase();
+run();

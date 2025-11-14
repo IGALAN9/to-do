@@ -41,7 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, );
 
   // 2. Update Data (PUT)
   const handleUpdate = async (id: number, updates: Partial<Todo>) => {
@@ -121,7 +121,7 @@ export default function Home() {
             <div className="space-y-3">
               {loading && <p className="text-center text-gray-500">Loading...</p>}
               {!loading && todos.length === 0 && (
-                <p className="text-center text-gray-500 mt-10">No todos yet. Click "NEW" to create one!</p>
+                <p className="text-center text-gray-500 mt-10">No todos yet. Click NEW to create one!</p>
               )}
 
               {/* LIST ITEM */}
@@ -174,7 +174,7 @@ export default function Home() {
             <div className="max-w-xl mx-auto mt-10">
               <AddTodoForm
                 onSuccess={() => {
-                  fetchTodos(); // Fetch akan otomatis menaruh item baru (Not Done)
+                  fetchTodos(); 
                   setView("LIST");
                 }}
               />

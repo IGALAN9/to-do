@@ -5,7 +5,7 @@ export default function AddTodoForm({ onSuccess }: { onSuccess: () => void }) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [, setError] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -18,12 +18,13 @@ export default function AddTodoForm({ onSuccess }: { onSuccess: () => void }) {
       setTitle("");
       setDesc("");
       onSuccess(); 
-    } catch (err) {
-      alert("Failed to create todo");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
@@ -49,3 +50,4 @@ export default function AddTodoForm({ onSuccess }: { onSuccess: () => void }) {
     </form>
   );
 }
+

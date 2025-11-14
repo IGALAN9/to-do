@@ -1,18 +1,14 @@
-// src/Backend/seed.js
 import { sequelize } from './config/database.js';
 import { Todo } from './models/Todo.js';
 
 const seedDatabase = async () => {
   try {
-    // Cek koneksi
     await sequelize.authenticate();
     console.log('🔌 Terhubung ke database...');
 
-    // force: true akan MENGHAPUS tabel lama dan membuatnya lagi (Reset Data)
     await sequelize.sync({ force: true });
     console.log('🧹 Database lama dibersihkan.');
 
-    // Masukkan Data Dummy & Simpan hasilnya ke variabel
     const createdTodos = await Todo.bulkCreate([
       {
         title: "Belajar Struktur Backend",
@@ -34,13 +30,12 @@ const seedDatabase = async () => {
     console.log("✅ Data dummy berhasil ditambahkan!");
     console.log("📊 Berikut data yang masuk ke database:");
     
-    // Tampilkan data dalam format JSON yang mudah dibaca
-    console.log(JSON.stringify(createdTodos, null, 2));
+    // console.log(JSON.stringify(createdTodos, null, 2));
 
-    process.exit(0); // Keluar sukses
+    process.exit(0); 
   } catch (error) {
     console.error("❌ Gagal seeding database:", error);
-    process.exit(1); // Keluar error
+    process.exit(1); 
   }
 };
 

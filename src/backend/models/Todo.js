@@ -4,7 +4,10 @@ import { sequelize } from '../config/database.js';
 export const Todo = sequelize.define('Todo', {
   title: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "Title wajib diisi, tidak boleh kosong!" } 
+    }
   },
   description: {
     type: DataTypes.STRING,

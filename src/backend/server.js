@@ -31,7 +31,7 @@ app.prepare().then(async () => {
   server.use(express.json());
 
     // 2. API Routes
-  server.use('/api/todos', routes); 
+    server.use('/api/todos', routes);
 
   // 3. Handle Frontend (Next.js)
   server.use(async (req, res) => {

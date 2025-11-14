@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     const todos = await Todo.findAll();
     res.json(todos);
   } catch (e) {
-    res.status(500).json({ error: "Gagal mengambil data" });
+    res.status(500).json({ error: e.message });
   }
 });
 

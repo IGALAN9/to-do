@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+## Mulai aplikasi
 
 ```bash
+
+npm install
+
+npm run seed (database akan terbuat dari sini)
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Design decisions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Tech Stack
+SERN = SQLite + Express + React + Node
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Monolithic with Custom Server
 
-## Learn More
+File server.js bertindak sebagai pintu gerbang utama. Ia menjalankan Express.js untuk menangani request API (/api/todos), dan menyerahkan sisa request lainnya ke Next.js (app.getRequestHandler()) untuk merender halaman web.
 
-To learn more about Next.js, take a look at the following resources:
+Kepraktisan. hanya perlu satu terminal (npm run dev) dan satu port (3000) untuk menjalankan aplikasi full-stack. Tidak perlu mengatur CORS karena domain dan port-nya sama.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Explicit Separation (Frontend vs Backend)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Membuat folder src/frontend untuk Next.js dan src/backend untuk Express/Sequelize.
 
-## Deploy on Vercel
+API Design: Modular REST API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Routing: Logika API dipisahkan ke file src/backend/routes/Routes.js, tidak ditumpuk di server.js. Ini membuat kode lebih bersih dan mudah dibaca.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Possible improvements
+
+Search and filter
+
+Untuk mencari tugas berdasarkan judul, tambahkan input search bar. Tambahkan juga filter tab: "Semua", "Aktif", dan "Selesai".
+
+Tenggat Waktu (Due Dates)
+
+Jika tugas sudah lewat tenggat waktu, indikator warna akan muncul.

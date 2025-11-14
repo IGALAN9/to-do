@@ -6,7 +6,7 @@ export const Todo = sequelize.define('Todo', {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
-      notEmpty: { msg: "Title tidak boleh kosong" }
+      notEmpty: { msg: "Title wajib diisi, tidak boleh kosong!" } 
     }
   },
   description: {

@@ -1,65 +1,197 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import TodoModal from "../components/TodoModal";
+import AddTodoForm from "../components/AddTodoForm";
+
+type Todo = {
+  id: number;
+  title: string;
+  description: string;
+  completed: boolean;
+};
 
 export default function Home() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [view, setView] = useState<"LIST" | "NEW">("LIST");
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Sorting yang udah bakal ke bawah
+  const sortTodos = (data: Todo[]) => {
+    return [...data].sort((a, b) => {
+      return Number(a.completed) - Number(b.completed);
+    });
+  };
+
+  // 1. Fetch Data dari API (GET)
+  const fetchTodos = async () => {
+    try {
+      const res = await fetch("/api/todos");
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setTodos(sortTodos(data));
+      }
+    } catch (error) {
+      console.error("Failed to fetch", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  // 2. Update Data (PUT)
+  const handleUpdate = async (id: number, updates: Partial<Todo>) => {
+    try {
+      const res = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (res.ok) {
+        const updatedTodo = await res.json();
+        
+        // Logic Sort otomatis setelah update
+        setTodos((prev) => {
+          const newList = prev.map((t) => (t.id === id ? updatedTodo : t));
+          return sortTodos(newList);
+        });
+
+        // Update selectedTodo jika yang diupdate adalah yang sedang dibuka
+        if (selectedTodo?.id === id) {
+          setSelectedTodo(updatedTodo);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to update", error);
+    }
+  };
+
+  // 3. Delete Data (DELETE)
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`/api/todos/${id}`, { method: "DELETE" });
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+      setSelectedTodo(null); 
+    } catch (error) {
+      console.error("Failed to delete", error);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-[#CFCFCF] p-4 md:p-10 font-sans">
+      <div className="max-w-5xl mx-auto bg-[#D9D9D9] rounded-[40px] shadow-xl overflow-hidden min-h-[80vh] flex flex-col">
+        {/* Header */}
+        <div className="bg-[#D9D9D9] p-8 pb-4">
+          <h1 className="text-5xl font-extrabold text-[#7B61FF] drop-shadow-sm">
+            TODO-LIST
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Menu Tabs */}
+        <div className="flex gap-4 px-8 py-4 bg-[#D9D9D9] border-b border-gray-300/50">
+          <button
+            onClick={() => setView("LIST")}
+            className={`px-12 py-2 rounded-full font-bold text-xl transition shadow-md ${
+              view === "LIST"
+                ? "bg-[#7B61FF] text-white"
+                : "bg-[#7B61FF]/40 text-white hover:bg-[#7B61FF]/60"
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            LIST
+          </button>
+          <button
+            onClick={() => setView("NEW")}
+            className={`px-12 py-2 rounded-full font-bold text-xl transition shadow-md ml-auto ${
+              view === "NEW"
+                ? "bg-[#7B61FF] text-white"
+                : "bg-[#7B61FF]/40 text-white hover:bg-[#7B61FF]/60"
+            }`}
           >
-            Documentation
-          </a>
+            NEW
+          </button>
         </div>
-      </main>
-    </div>
+
+        {/* Content Area */}
+        <div className="flex-1 bg-[#CFCFCF] p-6 overflow-y-auto">
+          {view === "LIST" ? (
+            <div className="space-y-3">
+              {loading && <p className="text-center text-gray-500">Loading...</p>}
+              {!loading && todos.length === 0 && (
+                <p className="text-center text-gray-500 mt-10">No todos yet. Click "NEW" to create one!</p>
+              )}
+
+              {/* LIST ITEM */}
+              {todos.map((todo) => (
+                <div
+                  key={todo.id}
+                  onClick={() => setSelectedTodo(todo)}
+                  className="group bg-[#7B61FF] text-white p-2 pl-6 pr-4 rounded-full flex items-center justify-between cursor-pointer hover:scale-[1.01] transition shadow-lg"
+                >
+                  {/* Title */}
+                  <div className="w-1/4 font-bold text-lg truncate uppercase">
+                    {todo.title}
+                  </div>
+
+                  {/* Description (Tengah) */}
+                  <div className="w-2/4 text-center text-white/80 text-sm truncate uppercase px-2">
+                    {todo.description}
+                  </div>
+
+                  {/* Status & Arrow (Kanan) */}
+                  <div className="w-1/4 flex justify-end items-center gap-3">
+                    <div
+                      className={`px-4 py-1 rounded-full text-xs font-bold border border-black/20 text-black ${
+                        todo.completed ? "bg-[#4ADE80]" : "bg-[#DC2626]"
+                      }`}
+                    >
+                      Status : {todo.completed ? "Done" : "Not Done"}
+                    </div>
+                    {/* Arrow Icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={3}
+                      stroke="currentColor"
+                      className="w-6 h-6 text-black"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Form New Todo */
+            <div className="max-w-xl mx-auto mt-10">
+              <AddTodoForm
+                onSuccess={() => {
+                  fetchTodos(); // Fetch akan otomatis menaruh item baru (Not Done)
+                  setView("LIST");
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* MODAL DETAIL (Gambar 2 & 3) */}
+      {selectedTodo && (
+        <TodoModal
+          todo={selectedTodo}
+          onClose={() => setSelectedTodo(null)}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
+      )}
+    </main>
   );
 }

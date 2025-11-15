@@ -43,7 +43,7 @@ export default function Home() {
     fetchTodos();
   }, );
 
-  // 2. Update Data (PUT)
+  // 2. Update Data 
   const handleUpdate = async (id: number, updates: Partial<Todo>) => {
     try {
       const res = await fetch(`/api/todos/${id}`, {
@@ -70,7 +70,7 @@ export default function Home() {
     }
   };
 
-  // 3. Delete Data (DELETE)
+  // 3. Delete Data 
   const handleDelete = async (id: number) => {
     try {
       await fetch(`/api/todos/${id}`, { method: "DELETE" });

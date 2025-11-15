@@ -3,7 +3,7 @@ import { Todo } from '../models/Todo.js';
 
 const router = express.Router();
 
-// GET / - List all todos
+// GET / - Dapatkan semua todo
 router.get('/', async (req, res) => {
   try {
     const todos = await Todo.findAll();
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST / - Create new todo
+// POST / - Buat todo baru
 router.post('/', async (req, res) => {
   try {
     const { title, description } = req.body;

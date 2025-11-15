@@ -21,11 +21,12 @@ const run = async () => {
       console.log('File database ditemukan. Mereset isinya...');
     }
 
-    // 2. Jalankan Migrasi via CLI (Ini akan membuat tabel)
+    // 2. pengisian database dan migrasi
     console.log('Menjalankan Migrasi (Membuat Tabel)...');
     try {
       execSync('npx sequelize-cli db:migrate:undo:all', { stdio: 'inherit' });
       execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       console.error('Gagal saat migrasi CLI. Pastikan .sequelizerc benar.');
       process.exit(1);

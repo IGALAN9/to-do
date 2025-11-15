@@ -4,7 +4,7 @@
 
 npm install
 
-npm run seed (database akan terbuat dari sini)
+npm run seed (Database will be maked here)
 
 npm run dev
 

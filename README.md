@@ -1,4 +1,4 @@
-## Mulai aplikasi
+## Start Aplication
 
 ```bash
 
@@ -12,29 +12,19 @@ npm run dev
 
 ## Design decisions
 
-Tech Stack
-SERN = SQLite + Express + React + Node
+SQLite, Express, React, and Node.js are all part of the SERN stack technology. The server.js file acts as the primary gateway for the monolithic application architecture with a custom server. Express.js is used by this file to handle API requests; Next.js is used to produce pages for all other requests.
 
-Monolithic with Custom Server
+Because the entire application—frontend and backend—can be operated with a single terminal and port, this method is feasible. Because the frontend and backend operate on the same domain and port, CORS setting is also eliminated.
 
-File server.js bertindak sebagai pintu gerbang utama. Ia menjalankan Express.js untuk menangani request API (/api/todos), dan menyerahkan sisa request lainnya ke Next.js (app.getRequestHandler()) untuk merender halaman web.
-
-Kepraktisan. hanya perlu satu terminal (npm run dev) dan satu port (3000) untuk menjalankan aplikasi full-stack. Tidak perlu mengatur CORS karena domain dan port-nya sama.
-
-Explicit Separation (Frontend vs Backend)
-
-Membuat folder src/frontend untuk Next.js dan src/backend untuk Express/Sequelize.
-
-API Design: Modular REST API
-
-Routing: Logika API dipisahkan ke file src/backend/routes/Routes.js, tidak ditumpuk di server.js. Ini membuat kode lebih bersih dan mudah dibaca.
+Despite being monolithic, the code structure guarantees that the frontend and backend are distinct. Additionally, the API design adheres to a modular REST API style with distinct routing to prevent server.js logic from building up. The code is more manageable, tidy, and structured as a result of this division.
 
 ## Possible improvements
 
-Search and filter
+Search and Filter
+A search box might be introduced to make it simpler to look for activities by title. Additionally, including filters like "All," "Active," and "Completed" would enable customers to view jobs in accordance with their preferences.
 
-Untuk mencari tugas berdasarkan judul, tambahkan input search bar. Tambahkan juga filter tab: "Semua", "Aktif", dan "Selesai".
+Due Dates
+Users can determine whether a task has crossed the deadline by using the due date function. The program may show a color indicator as a marker when a task is past due.
 
-Tenggat Waktu (Due Dates)
-
-Jika tugas sudah lewat tenggat waktu, indikator warna akan muncul.
+MVC Pattern (Model-View-Controller)
+The project structure can become more structured by implementing the MVC pattern. The data flow is made clearer, the code is simpler to maintain, and future feature development is more organized when the Model, View, and Controller are kept apart.
